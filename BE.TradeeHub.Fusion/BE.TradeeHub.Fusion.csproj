@@ -13,4 +13,10 @@
       </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="HotChocolate.AspNetCore" Version="14.0.0-p.23" />
+      <PackageReference Include="HotChocolate.AspNetCore.CommandLine" Version="14.0.0-p.23" />
+      <PackageReference Include="HotChocolate.Fusion" Version="14.0.0-p.23" />
+    </ItemGroup>
+
 </Project>
