@@ -1,18 +1,22 @@
+using BE.TradeeHub.Fusion;
+
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<CookiePropagatingHandler>();
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("GraphQLCorsPolicy", builder =>
     {
-        builder.WithOrigins(["http://localhost:3000"]) // Replace with the client's URL
+        builder.WithOrigins(["http://localhost:3000","http://localhost:5020","http://172.17.0.1:5020"])
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
     });
 });
 
-builder.Services.AddHttpClient("Fusion");
+builder.Services.AddHttpClient("Fusion").AddHttpMessageHandler<CookiePropagatingHandler>();
 
 builder.Services
     .AddFusionGatewayServer()
