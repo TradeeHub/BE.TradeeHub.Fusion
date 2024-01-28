@@ -1,9 +1,14 @@
+using Amazon.CognitoIdentityProvider;
+using Amazon.Runtime;
 using BE.TradeeHub.Fusion;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var appSettings = new AppSettings(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddSingleton(appSettings);
 builder.Services.AddTransient<CookiePropagatingHandler>();
+builder.Services.AddSingleton<AuthService>();
 
 builder.Services.AddCors(options =>
 {
@@ -15,6 +20,25 @@ builder.Services.AddCors(options =>
             .AllowCredentials();
     });
 });
+
+// If I am on dev the setting should come from bottom right of rider aws toolkit no need to pass any values
+if (appSettings.Environment.Contains("dev", StringComparison.CurrentCultureIgnoreCase))
+{
+    builder.Services.AddScoped<IAmazonCognitoIdentityProvider, AmazonCognitoIdentityProviderClient>();
+}
+else
+{
+    //this means I am in docker and values are not saved anywhere in the solution but only in my docker environment variable you can edit the docker in rider ide(not the file)
+    var awsOptions = builder.Configuration.GetAWSOptions();
+
+    awsOptions.Credentials = new BasicAWSCredentials(
+        appSettings.AwsAccessKeyId, 
+        appSettings.AwsSecretAccessKey
+    );
+    builder.Services.AddSingleton<IAmazonCognitoIdentityProvider>(sp =>
+        new AmazonCognitoIdentityProviderClient(awsOptions.Credentials, appSettings.AWSRegion)
+    );
+}
 
 builder.Services.AddHttpClient("Fusion").AddHttpMessageHandler<CookiePropagatingHandler>();
 
