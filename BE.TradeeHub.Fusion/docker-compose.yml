@@ -1,0 +1,70 @@
+﻿version: "3.8"
+
+services:
+  mongo:
+    image: mongo:latest
+    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27017"]
+    ports:
+      - "27017:27017"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'host.docker.internal:27017'}]}) }" | mongosh --port 27017 --quiet
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      retries: 30
+    volumes:
+      - "mongo1_data:/data/db"
+      - "mongo1_config:/data/configdb"
+    network_mode: "bridge"
+
+volumes:
+  mongo1_data:
+  mongo1_config:
+
+
+#version: '3.8'
+#
+#services:
+#  mongo:
+#    container_name: mongo1
+#    image: mongo:latest
+#    volumes:
+#      - ~/mongors/data1:/data/db
+#      - ./rs-init.sh:/scripts/rs-init.sh
+#    networks:
+#      - tradee-hub
+#    ports:
+#      - 27021:27017
+#    links:
+#      - mongo2
+#      - mongo3
+#    restart: always
+#    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "dbrs" ]
+#  mongo2:
+#    container_name: mongo2
+#    image: mongo:latest
+#    volumes:
+#      - ~/mongors/data2:/data/db
+#    networks:
+#      - tradee-hub
+#    ports:
+#      - 27022:27017
+#    restart: always
+#    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "dbrs" ]
+#  mongo3:
+#    container_name: mongo3
+#    image: mongo:latest
+#    volumes:
+#      - ~/mongors/data3:/data/db
+#    networks:
+#      - tradee-hub
+#    ports:
+#      - 27023:27017
+#    restart: always
+#    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "dbrs" ]
+#
+#networks:
+#  tradee-hub:
+#    driver: bridge
