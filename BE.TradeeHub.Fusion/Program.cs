@@ -14,7 +14,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("GraphQLCorsPolicy", builder =>
     {
-        builder.WithOrigins(["http://localhost:3000","http://localhost:5020","http://172.17.0.1:5020"])
+        builder.WithOrigins(["http://localhost:3000", "http://localhost:5020", "http://172.17.0.1:5020"])
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -23,6 +23,7 @@ builder.Services.AddCors(options =>
 
 // If I am on dev the setting should come from bottom right of rider aws toolkit no need to pass any values
 if (appSettings.Environment.Contains("dev", StringComparison.CurrentCultureIgnoreCase))
+
 {
     builder.Services.AddScoped<IAmazonCognitoIdentityProvider, AmazonCognitoIdentityProviderClient>();
 }
@@ -32,13 +33,20 @@ else
     var awsOptions = builder.Configuration.GetAWSOptions();
 
     awsOptions.Credentials = new BasicAWSCredentials(
-        appSettings.AwsAccessKeyId, 
+        appSettings.AwsAccessKeyId,
         appSettings.AwsSecretAccessKey
     );
     builder.Services.AddSingleton<IAmazonCognitoIdentityProvider>(sp =>
         new AmazonCognitoIdentityProviderClient(awsOptions.Credentials, appSettings.AWSRegion)
     );
 }
+
+// builder.Services.AddHeaderPropagation(options =>
+//     {
+//         options.Headers.Add("GraphQL-Preflight");
+//         options.Headers.Add("Authorization");
+//     }
+// );
 
 builder.Services.AddHttpClient("Fusion").AddHttpMessageHandler<CookiePropagatingHandler>();
 
@@ -51,16 +59,24 @@ var app = builder.Build();
 app.UseCors("GraphQLCorsPolicy"); // Apply the CORS policy
 app.UseRouting();
 app.MapGraphQL();
+// app.UseHeaderPropagation();
 
 app.Use(async (context, next) =>
 {
-    if (context.Request.Path == "/")
+    try
     {
-        context.Response.Redirect("/graphql/", permanent: false);
+        if (context.Request.Path == "/")
+        {
+            context.Response.Redirect("/graphql/", permanent: false);
+        }
+        else
+        {
+            await next();
+        }
     }
-    else
+    catch (Exception e)
     {
-        await next();
+        var temp = e.Message;
     }
 });
 
