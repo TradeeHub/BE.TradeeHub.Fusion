@@ -14,12 +14,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Amazon.AspNetCore.Identity.Cognito" Version="3.0.1" />
-      <PackageReference Include="AWSSDK.CognitoIdentityProvider" Version="3.7.302.7" />
-      <PackageReference Include="HotChocolate.AspNetCore" Version="13.9.0" />
-      <PackageReference Include="HotChocolate.AspNetCore.CommandLine" Version="13.9.0" />
-      <PackageReference Include="HotChocolate.Fusion" Version="13.9.0" />
-      <PackageReference Include="Microsoft.AspNetCore.HeaderPropagation" Version="8.0.2" />
+      <PackageReference Include="Amazon.AspNetCore.Identity.Cognito" Version="3.0.2" />
+      <PackageReference Include="AWSSDK.CognitoIdentityProvider" Version="3.7.400.2" />
+      <PackageReference Include="HotChocolate.AspNetCore" Version="13.9.8" />
+      <PackageReference Include="HotChocolate.AspNetCore.CommandLine" Version="13.9.8" />
+      <PackageReference Include="HotChocolate.Fusion" Version="13.9.8" />
+      <PackageReference Include="Microsoft.AspNetCore.HeaderPropagation" Version="8.0.7" />
     </ItemGroup>
 
 </Project>
